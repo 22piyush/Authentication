@@ -66,3 +66,61 @@ export const register = catchAsyncError(async (req, res, next) => {
         next(error)
     }
 })
+
+async function sendVerificationCode(verificationMethod, verificationCode, email, phone) {
+    if (verificationMethod == 'email') {
+        const message = generateEmailTemplate(verificationCode);
+        sendEmail({ email, subject: 'Your Verification Code', message })
+    }
+}
+
+function generateEmailTemplate(verificationCode) {
+    return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>Email Verification</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f4;
+          padding: 20px;
+        }
+        .container {
+          max-width: 500px;
+          background: #ffffff;
+          margin: auto;
+          padding: 20px;
+          border-radius: 8px;
+          text-align: center;
+          box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .code {
+          font-size: 24px;
+          font-weight: bold;
+          color: #4CAF50;
+          margin: 20px 0;
+          letter-spacing: 3px;
+        }
+        .footer {
+          font-size: 12px;
+          color: #777;
+          margin-top: 20px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h2>Email Verification</h2>
+        <p>Use the verification code below to verify your email:</p>
+        <div class="code">${verificationCode}</div>
+        <p>This code will expire in 10 minutes.</p>
+        <div class="footer">
+          If you did not request this, please ignore this email.
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
