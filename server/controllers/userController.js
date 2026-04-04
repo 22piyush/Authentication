@@ -55,8 +55,14 @@ export const register = catchAsyncError(async (req, res, next) => {
 
         const user = await User.create(userData);
 
+        const verificationCode = await user.generateVerificationCode();
+        await user.save();
+        sendVerificationCode(verificationMethod, verificationCode, email, phone);
+        res.status(200).json({
+            success: true
+        });
 
     } catch (error) {
-
+        next(error)
     }
 })
